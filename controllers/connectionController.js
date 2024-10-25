@@ -1,6 +1,7 @@
 const Connection = require("../models/connection.model.js");
 const User = require("../models/auth.model.js");
 
+const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
 const sendRequest = async (req, res) => {
   try {
     const fromUserId = req.user._id;
@@ -41,15 +42,15 @@ const sendRequest = async (req, res) => {
 
     const data = await connection.save();
 
-    res
-      .status(201)
-      .send(
+    res.status(201).json({
+      message:
         status +
-          " request send from " +
-          req.user.firstName +
-          " to " +
-          toUser.firstName
-      );
+        " request send from " +
+        req.user.firstName +
+        " to " +
+        toUser.firstName,
+      data,
+    });
   } catch (err) {
     console.log("connection send error ", err.message);
     res.status(400).json({
@@ -73,7 +74,9 @@ const reviewRequest = async (req, res) => {
       _id: requestId,
       toUserId: loggedInUser,
       status: "interested",
-    });
+    })
+      .populate("toUserId", USER_SAFE_DATA)
+      .populate("fromUserId", USER_SAFE_DATA);
 
     if (!connectionRequest) {
       res.status(400).send("No such request exist");
