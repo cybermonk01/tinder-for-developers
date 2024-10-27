@@ -3,9 +3,13 @@ const User = require("../models/auth.model.js");
 
 const auth = async (req, res, next) => {
   try {
-    const token = req.cookies;
-    console.log("token", token);
-    const decodedObj = jwt.verify(token.token, "Secret");
+    // const token = req.cookies;
+    const { token } = req.cookies;
+    console.log("token-auth", token, req);
+    if (!token) {
+      return res.status(401).send("Please Login!");
+    }
+    const decodedObj = jwt.verify(token, "Secrets");
 
     const { _id } = decodedObj;
 
@@ -18,6 +22,7 @@ const auth = async (req, res, next) => {
 
     next();
   } catch (err) {
+    console.log(err.message, "err");
     res.status(400).send("ERROR: " + err.message);
   }
 };

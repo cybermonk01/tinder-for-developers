@@ -39,10 +39,12 @@ const signUp = async (req, res) => {
   });
 
   const data = await user.save();
-  const token = await user.getJWT();
+  const token = await user.getJwt();
 
+  console.log("token", token);
   res.cookie("token", token, {
     expires: new Date(Date.now() + 8 * 3600000),
+    sameSite: "None",
   });
 
   return res.status(201).json({
@@ -66,28 +68,33 @@ const login = async (req, res) => {
 
   const isPasswordMatched = await user.validatePassword(password);
 
+  const token = await user.getJwt();
   if (isPasswordMatched) {
-    const token = await user.getJwt();
-
+    console.log("token", token);
     res.cookie("token", token, {
-      expires: new Date(Date.now() + 8 * 3600000),
+      expires: new Date(Date.now() + 14 * 3600000),
     });
   }
 
   res.status(200).json({
     message: "login successful",
     user,
+    token,
   });
 };
 
 const logout = async (req, res) => {
-  res.cookie("token", "", {
-    expires: new Date(Date.now()),
-  });
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+    });
 
-  res.status(200).json({
-    message: "logout successful",
-  });
+    res.status(200).json({
+      message: "logout successful",
+    });
+  } catch (err) {
+    res.status(400).send("error in logout", err.message);
+  }
 };
 module.exports = {
   test,

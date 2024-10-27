@@ -4,12 +4,20 @@ const connectionRouter = require("./routes/connectionRoutes");
 const userRouters = require("./routes/userRoutes.js");
 const dbConnect = require("./utils/dbConnect");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const app = express();
 const PORT = 5000;
-
-app.use(express.json());
+// app.use(cookieParser());
 app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+app.use(express.json());
 app.use("/api", authRouter);
 app.use("/api", connectionRouter);
 app.use("/api", userRouters);
