@@ -48,7 +48,7 @@ const connections = async (req, res) => {
 
     console.log("cns", connections);
     const data = connections.map((conn) => {
-      if (conn.fromUserId.toString() === loggedInUser._id.toString()) {
+      if (conn.fromUserId._id.toString() === loggedInUser._id.toString()) {
         return conn.toUserId;
       }
 
