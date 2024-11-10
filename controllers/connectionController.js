@@ -72,7 +72,7 @@ const reviewRequest = async (req, res) => {
 
     const connectionRequest = await Connection.findOne({
       _id: requestId,
-      toUserId: loggedInUser,
+      toUserId: loggedInUser._id,
       status: "interested",
     })
       .populate("toUserId", USER_SAFE_DATA)
@@ -82,7 +82,7 @@ const reviewRequest = async (req, res) => {
       res.status(400).send("No such request exist");
     }
 
-    req.status = status;
+    connectionRequest.status = status;
 
     const data = await connectionRequest.save();
 

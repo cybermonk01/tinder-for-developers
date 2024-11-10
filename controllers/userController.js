@@ -55,6 +55,10 @@ const connections = async (req, res) => {
       return conn.fromUserId;
     });
 
+    // const user = await User.findById(data[0]._id);
+
+    // console.log("data", data);
+    // console.log("data", user);
     res.status(200).json({
       message: "connections fetched",
       data: data,
@@ -109,8 +113,38 @@ const feed = async (req, res) => {
     return res.status(400).send("error in feed");
   }
 };
+
+const editProfile = async (req, res) => {
+  try {
+    const { skills, age, gender, about, photoUrl } = req.body;
+
+    const loggedInUser = req.user;
+
+    const user = await User.findByIdAndUpdate(
+      loggedInUser._id,
+      {
+        gender,
+        age,
+        about,
+        skills,
+        photoUrl,
+      },
+      { new: true }
+    );
+
+    const data = await user.save();
+    res.status(200).json({
+      message: "edit profile success!",
+      data,
+    });
+  } catch (err) {
+    console.log(err.message, "error in edit");
+    res.send(err.message);
+  }
+};
 module.exports = {
   requests,
   connections,
   feed,
+  editProfile,
 };
